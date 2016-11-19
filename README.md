@@ -1,0 +1,2 @@
+# mypythonlib
+portable python functions
