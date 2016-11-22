@@ -38,6 +38,19 @@ def gen_primes():
 
 
 def is_prime(n):
+    '''
+    Check whether n is a prime number
+
+    >>> is_prime(2)
+    True
+
+    >>> is_prime(3)
+    True
+
+    >>> is_prime(10)
+    False
+
+    '''
     if n<=1:
        return False
     for i in range(2,int(n**0.5+1)):
@@ -47,9 +60,71 @@ def is_prime(n):
 
 
 def factorial(n):
+    '''
+    Calculate factorial of n, n!
+    >>> factorial(0)
+    1
+
+    >>> factorial(1)
+    1
+
+    >>> factorial(2)
+    2
+
+    >>> factorial(3)
+    6
+
+    >>> factorial(5)
+    120
+    '''
     if n==0 or n==1:
         return 1
     p = 1
     for i in range(2,n+1):
         p *= i
     return p
+
+def coins(s,n):
+    ''' dynamic programming for coins summation
+    
+    s, a list of possible coins,starting from 1
+    n, the summation
+    question, how many ways of blablah
+
+    >>> coins([1,2],4)
+    3
+
+    >>> coins([1,2,3,4],5)
+    6
+
+    >>> coins([1,2,5,10,20,50,100,200],200)
+    73682
+
+    >>> coins(list(range(1,100)),100)
+    190569291
+
+    if len(s)==1:
+        return 1
+
+    if n == 1:
+        return 1
+
+    if n < 1:
+        return 1
+    '''
+    if n == 0:
+        return 1
+    if n < 0:
+        return 0
+    if len(s) == 0:
+        return 0
+
+    return coins(s[:-1],n) + coins(s,n-s[-1])
+
+
+
+
+
+if __name__ == '__main__':
+    import doctest, ekailia
+    doctest.testmod(ekailia)
