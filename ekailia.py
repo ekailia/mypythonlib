@@ -38,9 +38,8 @@ def gen_primes():
 
 
 def is_prime(n):
+    '''Check whether n is a prime number'''
     '''
-    Check whether n is a prime number
-
     >>> is_prime(2)
     True
 
@@ -60,8 +59,8 @@ def is_prime(n):
 
 
 def factorial(n):
+    '''Calculate factorial of n, n!'''
     '''
-    Calculate factorial of n, n!
     >>> factorial(0)
     1
 
@@ -84,47 +83,53 @@ def factorial(n):
         p *= i
     return p
 
-def coins(s,n):
-    ''' dynamic programming for coins summation
-    
-    s, a list of possible coins,starting from 1
+def coins(s,n,recursive=False):
+    '''Dynamic programming for coins summation
+    s, list of possible coins
     n, the summation
-    question, how many ways of blablah
-
+    Returns the number of different ways that n can be made using any number of elements in s
+    Recursion is possible, but takes more time for large numbers
+    '''
+    '''
     >>> coins([1,2],4)
     3
 
     >>> coins([1,2,3,4],5)
     6
 
+    >>> coins([1,2,5,10,20,50,100,200],200, recursive=True)
+    73682
+    
     >>> coins([1,2,5,10,20,50,100,200],200)
     73682
-
+    
+    >>> coins([3,5],7)
+    0
+    
     >>> coins(list(range(1,100)),100)
     190569291
-
-    if len(s)==1:
-        return 1
-
-    if n == 1:
-        return 1
-
-    if n < 1:
-        return 1
     '''
-    if n == 0:
-        return 1
-    if n < 0:
-        return 0
-    if len(s) == 0:
-        return 0
+    if not recursive:
+        c = [1] + [0]*n
+        for i in s:
+            for j in range(i,n+1):
+                c[j] += c[j-i]
+        return c[-1]
+    else:
+        if n == 0:
+            return 1
+        if n < 0:
+            return 0
+        if s == []:
+            return 0
+        return coins(s[:-1],n,recursive=False) + coins(s,n-s[-1],recursive=False)
 
-    return coins(s[:-1],n) + coins(s,n-s[-1])
 
 
-
+def _test():
+    import doctest, ekailia
+    doctest.testmod(ekailia)
 
 
 if __name__ == '__main__':
-    import doctest, ekailia
-    doctest.testmod(ekailia)
+    _test()    

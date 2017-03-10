@@ -1,51 +1,55 @@
-def c1(h):
+#lacks of info: how to rank between colors
+#e.g. 5H 5S 6H 6S 7H v.s. 5D 5C 6D 6C 7S
+
+def check_pairs(h):
     '''
     Primary Check of h (hand)
 
-    >>> c1([[5, 'H'], [5, 'C'], [6, 'S'], [7, 'S'], [13, 'D']])
+    >>> check_pairs([[5, 2], [5, 1], [6, 3], [7, 3], [13, 0]])
     'One Pair'
     
-    >>> c1([[5, 'H'], [5, 'C'], [6, 'S'], [13, 'S'], [13, 'D']])
-    'Two Pairs'
+    >>> check_pairs([[5, 2], [5, 1], [6, 3], [13, 3], [13, 0]])
+    ['Two Pairs', 13, 5]
 
-    >>> c1([[5, 'H'], [6, 'C'], [6, 'S'], [13, 'S'], [13, 'D']])
-    'Two Pairs'
+    >>> check_pairs([[5, 2], [6, 1], [6, 3], [13, 3], [13, 0]])
+    ['Two Pairs', 13, 6]
 
-    >>> c1([[5, 'H'], [13, 'C'], [6, 'S'], [13, 'S'], [13, 'D']])
-    'Three of a Kind'
+    >>> check_pairs([[5, 2], [13, 1], [6, 3], [13, 3], [13, 0]])
+    ['Three of a Kind', 13]
 
-    >>> c1([[5, 'H'], [5, 'C'], [13, 'S'], [13, 'S'], [13, 'D']])
-    'Full House'
+    >>> check_pairs([[5, 2], [5, 1], [13, 3], [13, 3], [13, 0]])
+    ['Full House', 13]
 
-    >>> c1([[5, 'H'], [10, 'C'], [6, 'S'], [3, 'S'], [11, 'D']])
+    >>> check_pairs([[5, 2], [10, 1], [6, 3], [3, 3], [11, 0]])
     'No Pair'
 
-    >>> c1([[10, 'H'], [10, 'C'], [10, 'S'], [3, 'S'], [10, 'D']])
-    'Four of a Kind'
+    >>> check_pairs([[10, 2], [10, 1], [10, 3], [3, 3], [10, 0]])
+    ['Four of a Kind', 10]
     
     '''
     
     d={}
-    for i in [j[0] for j in h]:
-        if i in d:
-            d[i] += 1
+    for i in h:
+        if i[0] in d:
+            d[i[0]] += 1
         else:
-            d[i] = 1
-    x4 = [i for i in d if d[i]==4]
-    x3 = [i for i in d if d[i]==3]
-    x2 = [i for i in d if d[i]==2]
+            d[i[0]] = 1
 
-    if len(x4) == 1:
-        return "Four of a Kind"
-    if len(x3) == 1:
-        if len(x2) == 1:
-            return "Full House"
-        elif len(x2) == 0:
-            return "Three of a Kind"
-    else:
+    x4 = [i for i in h if d[i[0]]==4]
+    x3 = [i for i in h if d[i[0]]==3]
+    x2 = [i for i in h if d[i[0]]==2]
+
+    if len(x4) == 4:
+        return ["Four of a Kind",x4[0][0]] #number
+    if len(x3) == 3:
         if len(x2) == 2:
-            return "Two Pairs"
-        elif len(x2) == 1:
+            return ["Full House", x3[0][0]] #number
+        elif len(x2) == 0:
+            return ["Three of a Kind",x3[0][0]] #number
+    else:
+        if len(x2) == 4:
+            return ["Two Pairs", max([i[0] for i in x2]),min([i[0] for i in x2])]
+        elif len(x2) == 2:
             return "One Pair"
         else:
             return "No Pair"
@@ -56,33 +60,34 @@ def clear_data(a):
     Transform data to suitable format
 
     >>> clear_data('5H 5C 6S 7S KD')
-    [[5, 'H'], [5, 'C'], [6, 'S'], [7, 'S'], [13, 'D']]
+    [[5, 2], [5, 1], [6, 3], [7, 3], [13, 0]]
 
     >>> clear_data('2D 3H 7D JD 3D')
-    [[2, 'D'], [3, 'H'], [7, 'D'], [11, 'D'], [3, 'D']]
+    [[2, 0], [3, 2], [7, 0], [11, 0], [3, 0]]
     '''
 
-    d={}
+    dn={}
+    dc={'S':3, 'H':2, 'C':1, 'D':0}
     for i in range(2,10):
-        d[str(i)] = i
-    d['T'] = 10
-    d['J'] = 11
-    d['Q'] = 12
-    d['K'] = 13
-    d['A'] = 14
-    h = [[d[i[0]],i[1]] for i in a.split()]
+        dn[str(i)] = i
+    dn['T'] = 10
+    dn['J'] = 11
+    dn['Q'] = 12
+    dn['K'] = 13
+    dn['A'] = 14
+    h = [[dn[i[0]],dc[i[1]]] for i in a.split()]
     return h
 
 
 def is_straight(h):
     '''
-    >>> is_straight([[5, 'H'], [5, 'C'], [6, 'S'], [7, 'S'], [13, 'D']])
+    >>> is_straight([[5, 2], [5, 1], [6, 3], [7, 3], [13, 0]])
     False
 
-    >>> is_straight([[5, 'H'], [7, 'C'], [6, 'S'], [8, 'S'], [4, 'D']])
+    >>> is_straight([[5, 2], [7, 1], [6, 3], [8, 3], [4, 0]])
     True
 
-    >>> is_straight([[5, 'H'], [6, 'H'], [7, 'H'], [8, 'H'], [9, 'H']])
+    >>> is_straight([[5, 2], [6, 2], [7, 2], [8, 2], [9, 2]])
     True
 
     '''
@@ -92,13 +97,13 @@ def is_straight(h):
 
 def high_card(h):
     '''
-    >>> high_card([[5, 'H'], [5, 'C'], [6, 'S'], [7, 'S'], [13, 'D']])
+    >>> high_card([[5, 2], [5, 1], [6, 3], [7, 3], [13, 0]])
     13
 
-    >>> high_card([[5, 'H'], [7, 'C'], [6, 'S'], [8, 'S'], [4, 'D']])
+    >>> high_card([[5, 2], [7, 1], [6, 3], [8, 3], [4, 0]])
     8
 
-    >>> high_card([[3, 'S'], [10, 'H'], [2, 'H'], [8, 'H'], [9, 'H']])
+    >>> high_card([[3, 3], [10, 2], [2, 2], [8, 2], [9, 2]])
     10
 
     '''
@@ -108,13 +113,13 @@ def high_card(h):
 
 def is_flush(h):
     '''
-    >>> is_flush([[5, 'H'], [5, 'C'], [6, 'S'], [7, 'S'], [13, 'D']])
+    >>> is_flush([[5, 2], [5, 1], [6, 3], [7, 3], [13, 0]])
     False
 
-    >>> is_flush([[5, 'H'], [7, 'C'], [6, 'S'], [8, 'S'], [4, 'D']])
+    >>> is_flush([[5, 2], [7, 1], [6, 3], [8, 3], [4, 0]])
     False
 
-    >>> is_flush([[3, 'S'], [10, 'S'], [2, 'S'], [8, 'S'], [9, 'S']])
+    >>> is_flush([[3, 3], [10, 3], [2, 3], [8, 3], [9, 3]])
     True
     
     '''
@@ -125,23 +130,23 @@ def is_flush(h):
 
 def is_straight_flush(h):
     '''
-    >>> is_straight_flush([[5, 'H'], [7, 'H'], [6, 'S'], [8, 'S'], [4, 'D']])
+    >>> is_straight_flush([[5, 2], [7, 2], [6, 3], [8, 3], [4, 0]])
     False
 
-    >>> is_straight_flush([[3, 'S'], [4, 'S'], [6, 'S'], [5, 'S'], [7, 'S']])
+    >>> is_straight_flush([[3, 3], [4, 3], [6, 3], [5, 3], [7, 3]])
     True
     '''
     return is_flush(h) and is_straight(h)
 
 def is_royal_flush(h):
     '''
-    >>> is_royal_flush([[5, 'H'], [7, 'H'], [6, 'S'], [8, 'S'], [4, 'D']])
+    >>> is_royal_flush([[5, 2], [7, 2], [6, 3], [8, 3], [4, 0]])
     False
 
-    >>> is_royal_flush([[3, 'S'], [4, 'S'], [6, 'S'], [5, 'S'], [7, 'S']])
+    >>> is_royal_flush([[3, 3], [4, 3], [6, 3], [5, 3], [7, 3]])
     False
     
-    >>> is_royal_flush([[10, 'S'], [11, 'S'], [12, 'S'], [13, 'S'], [14, 'S']])
+    >>> is_royal_flush([[10, 3], [11, 3], [12, 3], [13, 3], [14, 3]])
     True
     '''
     return is_straight_flush(h) and max([i[0] for i in h])==14
